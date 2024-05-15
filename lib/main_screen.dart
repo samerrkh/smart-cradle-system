@@ -23,7 +23,6 @@ class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    // Ensuring the PageController is listening for page changes
     _pageController.addListener(() {
       if (_pageController.page?.round() != _currentIndex) {
         setState(() {
