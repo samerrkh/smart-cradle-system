@@ -38,6 +38,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           automaticallyImplyLeading: false, 
           backgroundColor: Colors.transparent, 
           elevation: 0, // Remove AppBar shadow
+          leading: Navigator.canPop(context) ? IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color.fromARGB(221, 8, 0, 119)),
+          onPressed: () => Navigator.of(context).pop(),
+          ) : null,
+
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

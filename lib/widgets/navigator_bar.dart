@@ -35,15 +35,15 @@ class _CustomBottomNavigationBarState extends State<CustomBottomNavigationBar> {
         child: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-              icon: Icon(Icons.home, size: 30),
+              icon: Icon(Icons.home, size: 25),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.monitor, size: 30),
+              icon: Icon(Icons.monitor, size: 25),
               label: 'Monitoring',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings, size: 30),
+              icon: Icon(Icons.settings, size: 25),
               label: 'Settings',
             ),
           ],

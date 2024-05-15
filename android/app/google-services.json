@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "696629174309",
+    "project_id": "peaceful-cradle",
+    "storage_bucket": "peaceful-cradle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696629174309:android:cf873ef4160844326f5fcc",
+        "android_client_info": {
+          "package_name": "com.example.smart_cradle_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX1ziHQ3-7NW9ZBUF2wdtwo2K8khAf880"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

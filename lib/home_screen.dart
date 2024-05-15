@@ -4,6 +4,7 @@ import 'video_surveillance_screen.dart';
 import 'temp_humidity_screen.dart';
 import 'noise_detection_screen.dart';
 import 'notifications_screen.dart';
+import 'play_lullaby_songs.dart';  // Ensure this import is correct
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const TempHumidityScreen(),
     const NoiseDetectionScreen(),
     const NotificationsScreen(),
+    const PlayLullabySongs(),  
   ];
 
   final List<String> _titles = [
@@ -26,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     'Temperature & Humidity',
     'Noise Detection',
     'Notifications',
+    'Lullaby Songs',
   ];
 
   final List<IconData> _icons = [
@@ -33,12 +36,15 @@ class _HomeScreenState extends State<HomeScreen> {
     Icons.thermostat,
     Icons.hearing,
     Icons.notifications,
+    Icons.music_note,
   ];
+
   final List<String> animatedImages = [
     'assets/images/monitor.jpg',
     'assets/images/humidity.jpg',
     'assets/images/noise.jpg',
     'assets/images/notification.jpg',
+    'assets/images/style-music.jpg',
   ];
 
   @override
@@ -61,20 +67,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildAnimatedGridButton(BuildContext context, String title,
-      IconData icon, Widget destinationScreen, int index) {
-    // Adjust the padding as needed
+  Widget _buildAnimatedGridButton(BuildContext context, String title, IconData icon, Widget destinationScreen, int index) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: AnimatedOpacity(
         opacity: 0.9,
-        duration: Duration(
-            milliseconds: 500 + (index * 100)), // Staggered animation effect
+        duration: Duration(milliseconds: 500 + (index * 100)),  // Staggered animation effect
         child: Container(
-          height: 180, // Increased height for the container
+          height: 180,  // Increased height for the container
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(9.0),
-            color: Theme.of(context).colorScheme.surface, // Fallback color
+            color: Theme.of(context).colorScheme.surface,  // Fallback color
           ),
           child: InkWell(
             onTap: () {
@@ -84,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
             child: Stack(
-              fit: StackFit.expand, // Make the stack fill the container
+              fit: StackFit.expand,  // Make the stack fill the container
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(9.0),
@@ -98,11 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(
-                          0.5), // Semi-transparent background for the label
+                      color: Colors.black.withOpacity(0.5),  // Semi-transparent background for the label
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(9.0),
                         bottomRight: Radius.circular(9.0),
@@ -111,16 +112,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(icon,
-                            size: 30.0,
-                            color: Colors.white), // Increased icon size
-                        const SizedBox(
-                            width: 8.0), // Space between icon and text
+                        Icon(icon, size: 30.0, color: Colors.white),  // Increased icon size
+                        const SizedBox(width: 8.0),  // Space between icon and text
                         Expanded(
-                          child: Text(title,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16.0)), // Increased text size
+                          child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16.0)),  // Increased text size
                         ),
                       ],
                     ),
