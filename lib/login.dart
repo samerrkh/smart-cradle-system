@@ -6,7 +6,9 @@ import 'main_screen.dart';
 import 'package:smart_cradle_system/widgets/appbar.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+  final int notificationCount;
+
+  const Login({Key? key, required this.notificationCount}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -155,45 +157,45 @@ class _LoginState extends State<Login> {
     );
   }
 
-  Future<void> _signInWithCredential(AuthCredential credential) async {
-    try {
-      final UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
-      final bool isNewUser =
-          userCredential.additionalUserInfo?.isNewUser ?? false;
-      final User? user = userCredential.user;
+Future<void> _signInWithCredential(AuthCredential credential) async {
+  try {
+    final UserCredential userCredential =
+        await _auth.signInWithCredential(credential);
+    final bool isNewUser =
+        userCredential.additionalUserInfo?.isNewUser ?? false;
+    final User? user = userCredential.user;
 
-      if (user != null) {
-        final DocumentReference userDoc =
-            FirebaseFirestore.instance.collection('users').doc(user.uid);
-        final DocumentSnapshot userSnapshot = await userDoc.get();
+    if (user != null) {
+      final DocumentReference userDoc =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final DocumentSnapshot userSnapshot = await userDoc.get();
 
-        if (!userSnapshot.exists || isNewUser) {
-          await userDoc.set({
-            'phone': user.phoneNumber,
-            'createdAt': FieldValue.serverTimestamp(),
-          }, SetOptions(merge: true));
-        }
-
-        // Cast the data to Map<String, dynamic> to use the [] operator safely
-        final data = userSnapshot.data() as Map<String, dynamic>?;
-
-        // Check if the piSerial key exists and is not null before navigating
-        final String? piSerial = data?['piSerial'];
-        if (piSerial == null) {
-          _promptForPiSerial();
-        } else {
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(builder: (context) => const MainScreen()),
-          );
-        }
+      if (!userSnapshot.exists || isNewUser) {
+        await userDoc.set({
+          'phone': user.phoneNumber,
+          'createdAt': FieldValue.serverTimestamp(),
+        }, SetOptions(merge: true));
       }
-    } catch (e) {
-      _showDialog('An error occurred during sign in');
+
+      final data = userSnapshot.data() as Map<String, dynamic>?;
+      final String? piSerial = data?['piSerial'];
+      if (piSerial == null) {
+        _promptForPiSerial();
+      } else {
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainScreen(notificationCount: widget.notificationCount),
+          ),
+        );
+      }
     }
+  } catch (e) {
+    _showDialog('An error occurred during sign in');
   }
+}
+
 
   Future<void> _promptForPiSerial() async {
     TextEditingController piSerialController = TextEditingController();
@@ -228,7 +230,9 @@ class _LoginState extends State<Login> {
                   Navigator.pushReplacement(
                     // ignore: use_build_context_synchronously
                     context,
-                    MaterialPageRoute(builder: (context) => const MainScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => MainScreen(notificationCount: widget.notificationCount),
+                    ),
                   );
                 } else {
                   _showDialog(

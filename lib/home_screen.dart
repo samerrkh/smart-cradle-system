@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smart_cradle_system/widgets/appbar.dart';
-import 'video_surveillance_screen.dart';
+import 'monitoring_options_screen.dart';
 import 'temp_humidity_screen.dart';
-import 'noise_detection_screen.dart';
+import 'cry_detection_screen.dart';
 import 'notifications_screen.dart';
-import 'play_lullaby_songs.dart';  // Ensure this import is correct
+import 'play_lullaby_songs.dart';
+import 'gas_sensor_provider.dart';
+import 'main.dart'; // Import the main.dart to access MyAppState
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final int initialNotificationCount;
+
+  const HomeScreen({Key? key, required this.initialNotificationCount}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
-    const VideoSurveillanceScreen(),
+    const MonitoringOptionsScreen(),
     const TempHumidityScreen(),
-    const NoiseDetectionScreen(),
+    const CryDetectionScreen(),
     const NotificationsScreen(),
-    const PlayLullabySongs(),  
+    const PlayLullabySongs(),
   ];
 
   final List<String> _titles = [
     'Baby Monitor',
     'Temperature & Humidity',
-    'Noise Detection',
+    'Cry Detection',
     'Notifications',
     'Lullaby Songs',
   ];
@@ -49,6 +53,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gasSensorProvider = Provider.of<GasSensorProvider>(context);
+
+    // Listen for changes in gas detection status and handle notifications
+    if (gasSensorProvider.gasDetectedPreviously) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _handleGasDetection(context);
+      });
+    }
+
     return Scaffold(
       appBar: const CustomAppBar(titleText: 'Peaceful Cradle'),
       body: ListView.builder(
@@ -61,13 +74,34 @@ class _HomeScreenState extends State<HomeScreen> {
             _icons[index],
             _pages[index],
             index,
+            gasSensorProvider.notificationCount,
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _handleGasDetection(context);
+        },
+        child: const Icon(Icons.notification_important),
       ),
     );
   }
 
-  Widget _buildAnimatedGridButton(BuildContext context, String title, IconData icon, Widget destinationScreen, int index) {
+  void _handleGasDetection(BuildContext context) {
+    final myAppState = navigatorKey.currentState?.context.findAncestorStateOfType<MyAppState>();
+
+    if (myAppState != null) {
+      debugPrint('Handling gas detection in HomeScreen.');
+      myAppState.playNotificationSound();
+      myAppState.sendNotification("Danger Alert", "Gas detected! Please check the room immediately.");
+      myAppState.showLocalNotification();
+      myAppState.showGasDetectedDialog(context);
+    } else {
+      debugPrint('MyAppState not found.');
+    }
+  }
+
+  Widget _buildAnimatedGridButton(BuildContext context, String title, IconData icon, Widget destinationScreen, int index, int notificationCount) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: AnimatedOpacity(
@@ -80,11 +114,20 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Theme.of(context).colorScheme.surface,  // Fallback color
           ),
           child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => destinationScreen),
-              );
+            onTap: () async {
+              if (title == 'Notifications') {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => destinationScreen),
+                );
+                // ignore: use_build_context_synchronously
+                Provider.of<GasSensorProvider>(context, listen: false).resetNotificationCount();
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => destinationScreen),
+                );
+              }
             },
             child: Stack(
               fit: StackFit.expand,  // Make the stack fill the container
@@ -117,6 +160,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         Expanded(
                           child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16.0)),  // Increased text size
                         ),
+                        if (title == 'Notifications' && notificationCount > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(9.0),
+                            ),
+                            child: Text(
+                              '$notificationCount',
+                              style: const TextStyle(color: Colors.white, fontSize: 16.0),
+                            ),
+                          ),
                       ],
                     ),
                   ),

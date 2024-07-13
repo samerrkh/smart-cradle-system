@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String titleText;
   final Color backgroundColor;
+  final List<Widget>? actions;
 
   const CustomAppBar({
     Key? key,
     required this.titleText,
     this.backgroundColor = Colors.white,
+    this.actions,
   }) : super(key: key);
 
   @override
@@ -27,7 +29,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             colors: [
               Color.fromARGB(255, 222, 237, 249),
               Color.fromARGB(255, 183, 221, 252),
-              Color.fromARGB(255, 173, 186, 202),
               Color.fromARGB(255, 175, 215, 248),
             ],
           ),
@@ -35,18 +36,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         child: AppBar(
           centerTitle: false,
-          automaticallyImplyLeading: false, 
-          backgroundColor: Colors.transparent, 
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.transparent,
           elevation: 0, // Remove AppBar shadow
-          leading: Navigator.canPop(context) ? IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color.fromARGB(221, 8, 0, 119)),
-          onPressed: () => Navigator.of(context).pop(),
-          ) : null,
-
+          leading: Navigator.canPop(context)
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Color.fromARGB(221, 8, 0, 119)),
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              : null,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Image.asset('assets/images/cradle_logo.png', scale: 30), 
               const SizedBox(width: 10),
               Text(
                 titleText,
@@ -58,11 +59,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ],
           ),
+          actions: actions,
         ),
       ),
     );
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 10); 
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 10);
 }

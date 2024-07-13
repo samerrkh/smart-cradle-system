@@ -100,7 +100,7 @@ class SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _logout(BuildContext context) {
-    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Login()));
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Login(notificationCount: 0,)));
   }
 
   void _showDialog(String message) {

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'home_screen.dart';
 import 'monitoring_options_screen.dart';
 import 'settings_screen.dart';
+import 'notifications_screen.dart';
+import 'package:badges/badges.dart' as badges;
+import 'gas_sensor_provider.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final int notificationCount;
+
+  const MainScreen({Key? key, required this.notificationCount}) : super(key: key);
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -14,15 +20,17 @@ class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const MonitoringOptionsScreen(),
-    const SettingsScreen(),
-  ];
+  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
+    _screens = [
+      HomeScreen(initialNotificationCount: widget.notificationCount),
+      const MonitoringOptionsScreen(),
+      const SettingsScreen(),
+      const NotificationsScreen(),
+    ];
     _pageController.addListener(() {
       if (_pageController.page?.round() != _currentIndex) {
         setState(() {
@@ -44,6 +52,7 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final gasSensorProvider = Provider.of<GasSensorProvider>(context);
     return Scaffold(
       body: PageView(
         controller: _pageController,
@@ -55,27 +64,39 @@ class MainScreenState extends State<MainScreen> {
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Icon(Icons.home, size: 40),
+              child: Icon(Icons.home, size: 30),
             ),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Icon(Icons.monitor, size: 40),
+              child: Icon(Icons.monitor, size: 30),
             ),
             label: 'Monitoring',
           ),
-          BottomNavigationBarItem(
+          const BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: Icon(Icons.settings, size: 40),
+              child: Icon(Icons.settings, size: 30),
             ),
             label: 'Settings',
+          ),
+          BottomNavigationBarItem(
+            icon: badges.Badge(
+              badgeContent: gasSensorProvider.notificationCount > 0
+                  ? Text('${gasSensorProvider.notificationCount}', style: const TextStyle(color: Colors.white))
+                  : null,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 8.0),
+                child: Icon(Icons.notifications, size: 30),
+              ),
+            ),
+            label: 'Notifications',
           ),
         ],
         currentIndex: _currentIndex,
